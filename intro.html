@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blind Map</title>
+
+  <!-- Font Imports -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Helvetica Neue', 'Spoqa Han Sans Neo', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background-color: white;
+      height: 100vh;       /* ← 전체 화면 기준 맞추기 */
+  overflow: visible;
+    }
+
+    header {
+      display: flex;
+      width: 100%;
+      border-bottom: 1.5px solid #000;
+      background-color: white;
+      position: fixed; justify-content: space-between;
+        height: 74px;
+          z-index: 9999; /* ⭐ 이 줄 추가 */
+
+    }
+
+      h2 {
+        font-family:'Spoqa Han Sans Neo' ;
+        font-size: 61px;
+    font-weight: 700;
+   line-height: 1.2;
+    word-break: keep-all;  
+      }
+
+      p {
+        font-family:'Spoqa Han Sans Neo' ;
+        font-size: 22px;
+    font-weight: 400;
+   line-height: 1.4;
+    word-break: keep-all;  
+    padding-top: 30px;
+      }
+
+ .header-cell-1, .header-cell-2, .header-cell-3 {font-size: 18px; font-weight: 500; line-height: 1.0; display: flex; align-items: center; padding-top: 10px; padding-bottom: 10px;}
+    
+    .header-cell-1 {
+      padding-left: 17px; padding-right: 200px;
+    }
+
+    .header-cell-2 {
+      padding-left: 17px;
+      border-left: 1.5px solid #000;
+    }
+
+    .header-cell-3 {
+      padding-left: 28px;
+    }
+
+.header-right {
+  margin-left: auto; /* 우측 끝 정렬 */
+  display: flex;
+  flex-direction: column;
+  border-left: 1.5px solid #000;
+  width: 250px;
+}
+
+.right-top {
+  display: flex;
+  height: 37px;
+}
+
+.blind-map {
+  width: 100%;
+  height: 100%;
+  background-color: #2828FF;
+  background-image: url('smalllogo.png');
+  background-repeat: no-repeat;
+   background-position: left 18px center; /* ← 좌측에서 18px 띄움 */
+  background-origin: content-box;       /* ← 패딩 기준으로 배경 위치 조정 */ 
+  background-size: 48%;
+}
+
+.right-bottom {
+  display: flex;
+  height: 37px;
+}
+
+.nav-link {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: underline;
+  color: #0000EE;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  /* ✅ 가운데 정렬 제거 */
+  padding-left: 18px;           /* ✅ 좌측 패딩 적용 */
+  border-right: 1.5px solid #000;
+   position: relative;
+  z-index: 1000;
+}
+
+.nav-link:last-child {
+  border-right: none;
+    justify-content: flex-start;
+  padding-left: 18px;
+}
+
+  .fixed-section1 {
+    position: fixed;
+    top: 74px; /* 메뉴바 아래 */
+    width: 100%;
+    display: flex;
+    background-color:;
+    color: white;
+    z-index: 999;
+
+  }
+
+  .left-title {
+    flex: 1;
+    font-size: 105px;
+    font-weight: 700;
+    padding: 9px 18px;
+     position: relative;     /* 위치 조정 가능하게 설정 */
+  top: -6px;  
+ 
+  }
+
+  .right-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 497px;
+  }
+
+.blind-map-link {
+  display: block;
+  width: 100%;
+  height: 37px; /* ✅ 헤더 높이와 맞춤 */
+}
+
+/* 분할 */
+.split-container {
+  display: flex;
+  height: 100vh;
+}
+
+.left-fixed {
+  width: 113.5%;
+  position: sticky;
+  top: 74px;
+  height: calc(100vh - 74px);
+  background-color: #2828FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+   margin-top: 74px;
+}
+
+.intro-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.right-scroll {
+  width: 51.5%;
+  height: auto;
+  overflow-y: auto;
+padding: 60px 40px;
+  background-color: white;
+  margin-top: 44px;
+}
+
+.text-wrapper {
+  padding-left: 0;       /* 필요시 0~10px 등 조절 */
+  margin-left: -10px;    /* ← 원하는 만큼 왼쪽으로 이동 */
+}
+
+.blurred-image-wrapper {
+  margin-top: 60px;
+  overflow: hidden;
+}
+
+.blurred-img {
+  width: 100%;
+  height: auto;
+  filter: blur(12px);         /* ✅ 블러 정도 조절 가능 */
+  transform: scale(1.05);     /* 블러 이미지 확대 효과 */
+  opacity: 0.9;               /* 살짝 투명하게 */
+  display: block;
+}
+
+.folding-images {
+  position: fixed;
+  bottom: 40px;
+  left: 40.5%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 9999;
+}
+
+/* 이미지 각각: 블러 + 애니메이션 */
+.folding-img {
+  width: 380px;
+  height: auto;
+  filter: blur(0px);
+  transform-origin: center;
+  animation: fold-flip 3s infinite ease-in-out;
+    perspective: 1000px; /* ⭐ 입체감 핵심 */
+
+}
+
+/* 반으로 접혔다 펼쳐지는 효과 */
+@keyframes fold-flip {
+  0%, 100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotateX(90deg);
+    opacity: 0.3;
+  }
+}
+
+
+</style>
+
+</head>
+<body>
+  <header>
+  <div class="header-cell-1">Maps are<br>not neutral<br>to us</div>
+  <div class="header-cell-2">Where are<br>the hidden places,<br>what do we not see</div>
+  <div class="header-cell-3">Re-complete<br>6 places in<br>South Korea</div>
+
+  <div class="header-right">
+    <div class="right-top">
+      <a href="index.html" class="blind-map-link">
+        <div class="blind-map"></div>
+      </a>
+    </div>
+    <div class="right-bottom">
+      <a href="#intro" class="nav-link">Intro</a>
+      <a href="places.html" class="nav-link">6 places</a>
+    </div>
+  </div>
+</header>
+
+  <section class="fixed-section1">
+  <div class="left-title">Largest Mosaic</div>
+</section>
+
+<div class="split-container">
+  <div class="left-fixed">
+    <!-- 왼쪽 고정 영역 -->
+    <img src="intro.png" alt="left image" class="intro-image" />
+  </div>
+  <div class="right-scroll">
+     <div class="text-wrapper">
+    <h2>국내 주요 지도 서비스에서 특정 장소가 감쪽같이 숨겨지거나 흐려져있다. 왜?</h2>
+    <p>공간정보법 제35조 및 보안관리규정에 따라 국가 중요 시설물은 지도에 공개하지 않도록 규정되어 있다. 결국 지도 위에 그려진 정보는 국가기밀, 군사시설, 분쟁 지역 등 권력에 의해 삭제되거나 왜곡된다. 
+</p>
+  
+  </div>
+
+    <div class="blurred-image-wrapper">
+    <img src="tank.png" alt="blurred visual" class="blurred-img">
+  </div>
+  <img src="tank.png" alt="blurred visual" class="blurred-img">
+</div>
+</div>
+<div class="folding-images">
+  <img src="1.png" class="folding-img" />
+  <img src="2.png" class="folding-img" />
+  <img src="3.png" class="folding-img" />
+</div>
+
+  </div>
+</div>
+
+</body>
+</html>

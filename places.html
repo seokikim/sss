@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blind Map</title>
+
+  <!-- Font Imports -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Helvetica Neue', 'Spoqa Han Sans Neo', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background-color: white;
+      height: 100vh;       /* ← 전체 화면 기준 맞추기 */
+  overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      width: 100%;
+      border-bottom: 1.5px solid #000;
+      background-color: white;
+      position: fixed; justify-content: space-between;
+        height: 74px;
+
+    }
+
+ .header-cell-1, .header-cell-2, .header-cell-3 {font-size: 18px; font-weight: 500; line-height: 1.0; display: flex; align-items: center; padding-top: 10px; padding-bottom: 10px;}
+    
+    .header-cell-1 {
+      padding-left: 17px; padding-right: 200px;
+    }
+
+    .header-cell-2 {
+      padding-left: 17px;
+      border-left: 1.5px solid #000;
+    }
+
+    .header-cell-3 {
+      padding-left: 28px;
+    }
+
+.header-right {
+  margin-left: auto; /* 우측 끝 정렬 */
+  display: flex;
+  flex-direction: column;
+  border-left: 1.5px solid #000;
+  width: 250px;
+}
+
+.right-top {
+  display: flex;
+  height: 37px;
+}
+
+.blind-map {
+  width: 100%;
+  height: 100%;
+  background-color: #2828FF;
+  background-image: url('smalllogo.png');
+  background-repeat: no-repeat;
+   background-position: left 18px center; /* ← 좌측에서 18px 띄움 */
+  background-origin: content-box;       /* ← 패딩 기준으로 배경 위치 조정 */ 
+  background-size: 48%;
+}
+
+.right-bottom {
+  display: flex;
+  height: 37px;
+}
+
+.nav-link {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: underline;
+  color: #0000EE;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  /* ✅ 가운데 정렬 제거 */
+  padding-left: 18px;           /* ✅ 좌측 패딩 적용 */
+  border-right: 1.5px solid #000;
+}
+
+.nav-link:last-child {
+  border-right: none;
+    justify-content: flex-start;
+  padding-left: 18px;
+}
+
+/* 고정 섹션 */
+  .fixed-section {
+    position: fixed;
+    top: 74px; /* 메뉴바 아래 */
+    width: 100%;
+    display: flex;
+    border-bottom: 1.5px solid #000;
+    background-color: white;
+    z-index: 999;
+
+  }
+
+  .left-title {
+    flex: 1;
+    font-size: 105px;
+    font-weight: 700;
+    padding: 9px 18px;
+     position: relative;     /* 위치 조정 가능하게 설정 */
+  top: -6px;  
+ 
+  }
+
+  .right-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 497px;
+  }
+
+  .cell {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-family: 'Spoqa Han Sans Neo', sans-serif;
+    font-weight: 500;
+    background-color: #eee;
+     border: none;
+   border-top: none;
+  border-bottom: 1.5px solid #000;
+  border-right: 1.5px solid #000;
+  border-left: none;
+    text-decoration: none;
+    color: #000;
+    transition: background-color 0.2s, color 0.2s;
+
+  justify-content: flex-start;  /* ✅ 좌측 정렬 */
+  padding: 12px 18px;           /* ✅ 좌우 패딩 18px 기준 */
+  }
+
+  .cell:nth-child(odd) {
+  border-left: 1.5px solid #000; /* ✅ 왼쪽 긴 선 유지 */
+}
+
+  .cell:nth-child(2n) {
+  border-right: none;
+}
+
+.cell:nth-child(n+5) {
+  border-bottom: none;
+}
+
+  .cell:hover {
+    background-color: #2828FF;
+    color: #fff;
+  }
+
+/* 플레이스 지도 */
+  .image-container {
+  height: calc(100vh - 74px - 130px); /* 메뉴바 + 고정섹션 제외한 높이 (예: 130px) */
+  overflow: hidden;
+  position: relative;
+  margin-top: 220px;
+}
+
+.zoomable-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.3s ease; /* ⏳ 확대 전환을 1초 동안 천천히 */
+  transform-origin: center center;
+}
+
+
+.zoomable-img:hover {
+  transform: scale(1.4); /* 마우스 올리면 확대 */
+}
+
+/* 지도 위 로케이션 숫자 */
+.location-box {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-color: #eee;
+  color: #2828FF;
+  font-size: 24px;
+  font-weight: 700;
+  padding: 5px 13px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.image-container:hover .location-box {
+  opacity: 1;
+}
+
+.image-container:hover .zoomable-img,
+.image-container .hover-wrapper:hover ~ .zoomable-img {
+  transform: scale(1.4);
+}
+
+/* 각각 위치 조정 */
+.box-1 { top: 70%; left: 40%; }  /* 서산 */
+.box-2 { top: 83%; left: 48.3%; }  /* 대전 아래 */
+.box-3 { top: 41.5%; left: 68%; }  /* 강릉 위쪽 */
+.box-4 { top: 47%; left: 48%; }  /* 서울 근처 */
+.box-5 { top: 58.5%; left: 52.5%; }  /* 수원 근처 */
+.box-6 { top: 25%; left: 33%; }  /* 북한 평양 근처 */
+
+
+./* 숫자 박스 */
+.location-box {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-color: #eee;
+  color: #2828FF;
+  font-size: 24px;
+  font-weight: 700;
+  padding: 5px 13px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 호버 감지 박스 */
+.hover-wrapper {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+}
+
+/* 호버 이미지 */
+.popup-img {
+  position: fixed;
+  width: 500px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 9999; /* 무조건 가장 위 */
+  pointer-events: none;
+}
+
+.box-1-wrapper:hover ~ .popup-img-1 { opacity: 1; }
+.box-2-wrapper:hover ~ .popup-img-2 { opacity: 1; }
+.box-3-wrapper:hover ~ .popup-img-3 { opacity: 1; }
+.box-4-wrapper:hover ~ .popup-img-4 { opacity: 1; }
+.box-5-wrapper:hover ~ .popup-img-5 { opacity: 1; }
+.box-6-wrapper:hover ~ .popup-img-6 { opacity: 1; }
+
+.blind-map-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-cell-1">Maps are<br>not neutral<br>to us</div>
+    <div class="header-cell-2">Where are<br>the hidden places,<br>what do we not see</div>
+    <div class="header-cell-3">Re-complete<br>6 places in<br>South Korea</div>
+
+     <div class="header-right">
+    <div class="right-top">
+      <a href="index.html" class="blind-map-link">
+        <div class="blind-map"></div>
+      </a>
+    </div>
+  <div class="right-bottom">
+    <a href="intro.html" class="nav-link">Intro</a>
+    <a href="places.html" class="nav-link">6 places</a>
+  </div>
+</div>
+  </header>
+
+  <section class="fixed-section">
+  <div class="left-title">Censored places</div>
+  <div class="right-table">
+    <a href="page1.html" class="cell">1. 서울암사정수장</a>
+    <a href="page2.html" class="cell">2. 서울공항</a>
+    <a href="page3.html" class="cell">3. 소양강댐</a>
+    <a href="page4.html" class="cell">4. 영등포 홍등가</a>
+    <a href="page5.html" class="cell">5. 서울 구치소</a>
+    <a href="page6.html" class="cell">6. 북한</a>
+  </div>
+</section>
+
+<div class="image-container">
+  <img src="censored.png" alt="censored map" class="zoomable-img">
+  
+<!-- 숫자 박스와 호버 감지 박스 -->
+<div class="location-box box-1">1</div>
+<div class="hover-wrapper box-1-wrapper" style="top: 70%; left: 40%;"></div>
+
+<div class="location-box box-2">2</div>
+<div class="hover-wrapper box-2-wrapper" style="top: 83%; left: 48.3%;"></div>
+
+<div class="location-box box-3">3</div>
+<div class="hover-wrapper box-3-wrapper" style="top: 41.5%; left: 68%;"></div>
+
+<div class="location-box box-4">4</div>
+<div class="hover-wrapper box-4-wrapper" style="top: 47%; left: 48%;"></div>
+
+<div class="location-box box-5">5</div>
+<div class="hover-wrapper box-5-wrapper" style="top: 58.5%; left: 52.5%;"></div>
+
+<div class="location-box box-6">6</div>
+<div class="hover-wrapper box-6-wrapper" style="top: 25%; left: 33%;"></div>
+
+<!-- 호버 이미지 (이미지는 자유 위치 조정 가능) -->
+<img src="hover1.png" class="popup-img popup-img-1" style="top: 300px; left: 615px;">
+<img src="hover2.png" class="popup-img popup-img-2" style="top: 380px; left: 740px;">
+<img src="hover3.png" class="popup-img popup-img-3" style="top: 310px; left: 515px;">
+<img src="hover4.png" class="popup-img popup-img-4" style="top: 250px; left: 215px;">
+<img src="hover5.png" class="popup-img popup-img-5" style="top: 258px; left: 810px;">
+<img src="hover6.png" class="popup-img popup-img-6" style="top: 390px; left: 25.5px;">
+
+
+</div>
+
+
+
+</body>
+</html>
